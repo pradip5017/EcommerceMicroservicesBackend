@@ -1,0 +1,2 @@
+package com.ecommerce.user.dto;
+public record LoginResponse(String token, String username, String role) {}

@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-service
+  namespace: ecommerce
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: product-service
+  template:
+    metadata:
+      labels:
+        app: product-service
+    spec:
+      containers:
+        - name: product-service
+          image: your-dockerhub-user/product-service:1.0.0
+          ports:
+            - containerPort: 8082
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: product-service
+  namespace: ecommerce
+spec:
+  selector:
+    app: product-service
+  ports:
+    - port: 8082
+      targetPort: 8082
