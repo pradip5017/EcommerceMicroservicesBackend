@@ -25,7 +25,7 @@ public class ProductController {
    return repo.findById(id).orElseThrow(()->new RuntimeException("Product not found"));
  }
  @PutMapping("/{id}") public Product update(@PathVariable Long id,@Valid @RequestBody ProductRequest r){
-   Product p=get(id); copy(r,p); return repo.save(p);
+   Product p=get(id); copy(r,p); return repo.save(p); 
  }
  @DeleteMapping("/{id}") public void delete(@PathVariable Long id){repo.deleteById(id);}
  private void copy(ProductRequest r,Product p){
