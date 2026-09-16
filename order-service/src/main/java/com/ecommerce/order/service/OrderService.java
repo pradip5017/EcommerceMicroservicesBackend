@@ -1,4 +1,5 @@
 package com.ecommerce.order.service;
+import com.ecommerce.common.event.*;
 import com.ecommerce.order.dto.*;
 import com.ecommerce.order.entity.Order;
 import com.ecommerce.order.repository.OrderRepository;
@@ -30,7 +31,8 @@ public class OrderService {
    o.setStatus("SUCCESS".equalsIgnoreCase(e.status())?Order.Status.CONFIRMED:Order.Status.FAILED);
    repo.save(o);
    if(o.getStatus()==Order.Status.CONFIRMED)
-     kafka.send("order-confirmed",String.valueOf(o.getId()),e);
+     kafka.send("order-confirmed",String.valueOf(o.getId()),
+        new OrderConfirmedEvent(o.getId(),o.getAmount(),"CONFIRMED"));
  }
  public void inventoryFailed(OrderCreatedEvent e){
    Order o=get(e.orderId()); o.setStatus(Order.Status.FAILED); repo.save(o);

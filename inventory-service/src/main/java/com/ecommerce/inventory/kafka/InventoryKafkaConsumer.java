@@ -1,5 +1,5 @@
 package com.ecommerce.inventory.kafka;
-import com.ecommerce.inventory.dto.OrderCreatedEvent;
+import com.ecommerce.common.event.OrderCreatedEvent;
 import com.ecommerce.inventory.service.InventoryService;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
@@ -8,6 +8,6 @@ import org.springframework.stereotype.Component;
 public class InventoryKafkaConsumer {
  private final InventoryService service;
  public InventoryKafkaConsumer(InventoryService service){this.service=service;}
- @KafkaListener(topics="order-created",groupId="inventory-service")
+ @KafkaListener(topics="order-created",groupId="inventory-service-v2")
  public void consume(OrderCreatedEvent event){service.reserve(event);}
 }

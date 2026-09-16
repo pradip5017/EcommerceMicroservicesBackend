@@ -1,4 +1,5 @@
 package com.ecommerce.inventory.service;
+import com.ecommerce.common.event.*;
 import com.ecommerce.inventory.dto.*;
 import com.ecommerce.inventory.entity.Inventory;
 import com.ecommerce.inventory.repository.InventoryRepository;

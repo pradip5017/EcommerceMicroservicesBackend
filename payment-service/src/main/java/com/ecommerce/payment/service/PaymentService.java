@@ -1,5 +1,5 @@
 package com.ecommerce.payment.service;
-import com.ecommerce.payment.dto.*;
+import com.ecommerce.common.event.*;
 import com.ecommerce.payment.entity.Payment;
 import com.ecommerce.payment.repository.PaymentRepository;
 import org.springframework.kafka.core.KafkaTemplate;
