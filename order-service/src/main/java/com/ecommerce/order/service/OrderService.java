@@ -22,6 +22,17 @@ public class OrderService {
  }
  public Order get(Long id){return repo.findById(id).orElseThrow(()->new RuntimeException("Order not found"));}
 
+ public Order update(Long id, CreateOrderRequest r){
+   Order o=get(id);
+   o.setUserId(r.userId());
+   o.setProductId(r.productId());
+   o.setQuantity(r.quantity());
+   o.setAmount(r.amount());
+   return repo.save(o);
+ }
+
+ public void delete(Long id){repo.delete(get(id));}
+
  public void inventoryReserved(InventoryReservedEvent e){
    Order o=get(e.orderId()); o.setStatus(Order.Status.INVENTORY_RESERVED); repo.save(o);
    kafka.send("inventory-reserved-for-payment",String.valueOf(o.getId()),e);

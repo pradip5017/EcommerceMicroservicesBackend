@@ -4,6 +4,7 @@ import com.ecommerce.order.entity.Order;
 import com.ecommerce.order.repository.OrderRepository;
 import com.ecommerce.order.service.OrderService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -15,4 +16,7 @@ public class OrderController {
  @PostMapping public Order create(@Valid @RequestBody CreateOrderRequest r){return service.create(r);}
  @GetMapping("/{id}") public Order get(@PathVariable Long id){return service.get(id);}
  @GetMapping public List<Order> all(){return repo.findAll();}
+ @PutMapping("/{id}") public Order update(@PathVariable Long id,@Valid @RequestBody CreateOrderRequest r){return service.update(id,r);}
+ @DeleteMapping("/{id}") @ResponseStatus(HttpStatus.NO_CONTENT)
+ public void delete(@PathVariable Long id){service.delete(id);}
 }
