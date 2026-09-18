@@ -26,4 +26,9 @@ public class NotificationController {
     public List<Notification> byOrderId(@PathVariable Long orderId) {
         return service.getByOrderId(orderId);
     }
+
+    @GetMapping("/user/{userId}")
+    public List<Notification> byUserId(@PathVariable Long userId) {
+        return service.getByUserId(userId);
+    }
 }

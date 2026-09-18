@@ -15,6 +15,7 @@ public class Notification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long orderId;
+    private Long userId;
     private String message;
     private String status;
     private LocalDateTime createdAt;
@@ -24,6 +25,8 @@ public class Notification {
     public Long getId() { return id; }
     public Long getOrderId() { return orderId; }
     public void setOrderId(Long orderId) { this.orderId = orderId; }
+    public Long getUserId() { return userId; }
+    public void setUserId(Long userId) { this.userId = userId; }
     public String getMessage() { return message; }
     public void setMessage(String message) { this.message = message; }
     public String getStatus() { return status; }

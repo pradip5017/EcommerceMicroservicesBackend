@@ -2,4 +2,5 @@ package com.ecommerce.common.event;
 
 import java.math.BigDecimal;
 
-public record OrderConfirmedEvent(Long orderId, BigDecimal amount, String status) {}
+/** Must have the same JSON shape as the event emitted by order-service. */
+public record OrderConfirmedEvent(Long orderId, Long userId, BigDecimal amount, String status) {}

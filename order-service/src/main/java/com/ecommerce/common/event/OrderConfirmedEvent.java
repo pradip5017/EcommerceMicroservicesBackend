@@ -2,4 +2,5 @@ package com.ecommerce.common.event;
 
 import java.math.BigDecimal;
 
-public record OrderConfirmedEvent(Long orderId, BigDecimal amount, String status) {}
+/** Event emitted only after payment has completed successfully. */
+public record OrderConfirmedEvent(Long orderId, Long userId, BigDecimal amount, String status) {}

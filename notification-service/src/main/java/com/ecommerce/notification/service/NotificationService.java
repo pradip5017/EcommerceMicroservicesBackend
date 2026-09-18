@@ -18,6 +18,7 @@ public class NotificationService {
     public Notification create(NotificationRequest request) {
         Notification notification = new Notification();
         notification.setOrderId(request.orderId());
+        notification.setUserId(request.userId());
         notification.setMessage(request.message());
         notification.setStatus(request.status());
         notification.setCreatedAt(LocalDateTime.now());
@@ -30,6 +31,10 @@ public class NotificationService {
         return repo.findByOrderIdOrderByCreatedAtDesc(orderId);
     }
 
+    public List<Notification> getByUserId(Long userId) {
+        return repo.findByUserIdOrderByCreatedAtDesc(userId);
+    }
+
     public Notification get(Long id) {
         return repo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Notification not found with id: " + id));
@@ -38,6 +43,7 @@ public class NotificationService {
     public Notification update(Long id, NotificationRequest request) {
         Notification notification = get(id);
         notification.setOrderId(request.orderId());
+        notification.setUserId(request.userId());
         notification.setMessage(request.message());
         notification.setStatus(request.status());
         return repo.save(notification);
@@ -46,9 +52,24 @@ public class NotificationService {
     public void delete(Long id) { repo.delete(get(id)); }
 
     public Notification createOrderConfirmation(OrderConfirmedEvent event) {
+        String message = "Your order " + event.orderId() + " has been confirmed. Amount: " + event.amount();
+
         return create(new NotificationRequest(
                 event.orderId(),
-                "Order " + event.orderId() + " confirmed. Amount: " + event.amount(),
+                event.userId(),
+                message,
+                "SENT"
+        ));
+    }
+
+    public Notification createPaymentSuccess(OrderConfirmedEvent event) {
+        String message = "Payment successful! Your order " + event.orderId()
+                + " has been paid successfully. Amount: " + event.amount();
+
+        return create(new NotificationRequest(
+                event.orderId(),
+                event.userId(),
+                message,
                 "SENT"
         ));
     }

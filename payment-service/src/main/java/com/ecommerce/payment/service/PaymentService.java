@@ -4,6 +4,8 @@ import com.ecommerce.payment.dto.PaymentRequest;
 import com.ecommerce.payment.entity.Payment;
 import com.ecommerce.payment.repository.PaymentRepository;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -11,6 +13,7 @@ import java.util.List;
 
 @Service
 public class PaymentService {
+ private static final Logger log = LoggerFactory.getLogger(PaymentService.class);
  private final PaymentRepository repo; private final KafkaTemplate<String,Object> kafka;
  public PaymentService(PaymentRepository repo,KafkaTemplate<String,Object> kafka){this.repo=repo;this.kafka=kafka;}
 
@@ -45,5 +48,6 @@ public class PaymentService {
    p.setStatus("SUCCESS"); p.setCreatedAt(LocalDateTime.now()); repo.save(p);
    kafka.send("payment-completed",String.valueOf(e.orderId()),
       new PaymentCompletedEvent(e.orderId(),p.getAmount(),p.getStatus()));
+   log.info("Kafka sent payment-completed: orderId={}, status={}", e.orderId(), p.getStatus());
  }
 }

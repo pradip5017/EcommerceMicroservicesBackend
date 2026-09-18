@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 
 public record NotificationRequest(
         Long orderId,
+        Long userId,
         @NotBlank String message,
         @NotBlank String status
 ) {}
