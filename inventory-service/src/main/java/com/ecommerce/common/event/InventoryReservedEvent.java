@@ -1,3 +1,10 @@
 package com.ecommerce.common.event;
 
-public record InventoryReservedEvent(Long orderId, Long productId, int quantity) {}
+import java.math.BigDecimal;
+
+public record InventoryReservedEvent(
+        Long orderId,
+        Long productId,
+        int quantity,
+        BigDecimal amount
+) {}

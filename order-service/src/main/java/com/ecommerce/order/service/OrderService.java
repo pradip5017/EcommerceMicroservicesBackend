@@ -44,13 +44,24 @@ public class OrderService {
  }
  public void paymentCompleted(PaymentCompletedEvent e){
    Order o=get(e.orderId());
-   o.setStatus("SUCCESS".equalsIgnoreCase(e.status())?Order.Status.CONFIRMED:Order.Status.FAILED);
+   boolean paymentSuccessful = "SUCCESS".equalsIgnoreCase(e.status());
+   o.setStatus(paymentSuccessful ? Order.Status.CONFIRMED : Order.Status.CANCELLED);
    repo.save(o);
-   if(o.getStatus()==Order.Status.CONFIRMED) {
+   if(paymentSuccessful) {
      OrderConfirmedEvent confirmed = new OrderConfirmedEvent(o.getId(), o.getUserId(), o.getAmount(), "CONFIRMED");
      kafka.send("order-confirmed", String.valueOf(o.getId()), confirmed);
      kafka.send("payment-successful", String.valueOf(o.getId()), confirmed);
      log.info("Kafka sent order-confirmed and payment-successful: orderId={}, userId={}, payment=SUCCESS", o.getId(), o.getUserId());
+   } else {
+     String reason = e.status() == null || e.status().isBlank()
+         ? "PAYMENT_FAILED"
+         : "PAYMENT_" + e.status().toUpperCase();
+     OrderCancelledEvent cancelled = new OrderCancelledEvent(
+         o.getId(), o.getUserId(), o.getAmount(), reason
+     );
+     kafka.send("order-cancelled", String.valueOf(o.getId()), cancelled);
+     log.info("Kafka sent order-cancelled: orderId={}, userId={}, reason={}",
+         o.getId(), o.getUserId(), reason);
    }
  }
  public void inventoryFailed(OrderCreatedEvent e){

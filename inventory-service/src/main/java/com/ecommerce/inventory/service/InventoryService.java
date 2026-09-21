@@ -25,6 +25,6 @@ public class InventoryService {
    }
    i.setAvailableQuantity(i.getAvailableQuantity()-e.quantity()); repo.save(i);
    kafka.send("inventory-reserved",String.valueOf(e.orderId()),
-       new InventoryReservedEvent(e.orderId(),e.productId(),e.quantity()));
+       new InventoryReservedEvent(e.orderId(),e.productId(),e.quantity(),e.amount()));
  }
 }

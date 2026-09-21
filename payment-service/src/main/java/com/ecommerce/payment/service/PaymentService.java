@@ -3,6 +3,7 @@ import com.ecommerce.common.event.*;
 import com.ecommerce.payment.dto.PaymentRequest;
 import com.ecommerce.payment.entity.Payment;
 import com.ecommerce.payment.repository.PaymentRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +16,11 @@ import java.util.List;
 public class PaymentService {
  private static final Logger log = LoggerFactory.getLogger(PaymentService.class);
  private final PaymentRepository repo; private final KafkaTemplate<String,Object> kafka;
- public PaymentService(PaymentRepository repo,KafkaTemplate<String,Object> kafka){this.repo=repo;this.kafka=kafka;}
+ private final boolean forceFailure;
+ public PaymentService(PaymentRepository repo,KafkaTemplate<String,Object> kafka,
+                       @Value("${payment.demo.force-failure:false}") boolean forceFailure){
+   this.repo=repo; this.kafka=kafka; this.forceFailure=forceFailure;
+ }
 
  public Payment create(PaymentRequest request){
    Payment payment=new Payment();
@@ -43,9 +48,15 @@ public class PaymentService {
  public void delete(Long id){repo.delete(get(id));}
 
  public void process(InventoryReservedEvent e){
-   // Demo payment: always succeeds. Replace this section with Stripe/Razorpay/etc. in production.
-   Payment p=new Payment(); p.setOrderId(e.orderId()); p.setAmount(BigDecimal.ZERO);
-   p.setStatus("SUCCESS"); p.setCreatedAt(LocalDateTime.now()); repo.save(p);
+   // Replace this demo decision with the real payment provider integration.
+   // Map provider errors such as BANK_ERROR, SERVER_ERROR, TIMEOUT, and DECLINED
+   // to a non-SUCCESS status so the order is cancelled and the user is notified.
+   String status = forceFailure ? "FAILED" : "SUCCESS";
+   Payment p=new Payment();
+   p.setOrderId(e.orderId());
+   p.setAmount(e.amount());
+   p.setStatus(status);
+   p.setCreatedAt(LocalDateTime.now()); repo.save(p);
    kafka.send("payment-completed",String.valueOf(e.orderId()),
       new PaymentCompletedEvent(e.orderId(),p.getAmount(),p.getStatus()));
    log.info("Kafka sent payment-completed: orderId={}, status={}", e.orderId(), p.getStatus());

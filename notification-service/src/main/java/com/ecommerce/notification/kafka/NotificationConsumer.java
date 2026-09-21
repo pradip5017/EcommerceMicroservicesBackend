@@ -1,4 +1,5 @@
 package com.ecommerce.notification.kafka;
+import com.ecommerce.common.event.OrderCancelledEvent;
 import com.ecommerce.common.event.OrderConfirmedEvent;
 import com.ecommerce.notification.service.NotificationService;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -22,5 +23,13 @@ public class NotificationConsumer {
  public void consumePaymentSuccessful(OrderConfirmedEvent e){
    service.createPaymentSuccess(e);
    log.info("Kafka received payment-successful and created notification: orderId={}, userId={}", e.orderId(), e.userId());
+ }
+
+ @KafkaListener(topics="order-cancelled",groupId="notification-service-v2")
+ public void consumeOrderCancelled(OrderCancelledEvent e){
+   service.createPaymentFailed(e);
+   service.createOrderCancelled(e);
+   log.info("Kafka received order-cancelled and created failure notifications: orderId={}, userId={}",
+       e.orderId(), e.userId());
  }
 }

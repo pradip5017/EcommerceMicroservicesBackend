@@ -1,5 +1,6 @@
 package com.ecommerce.notification.service;
 
+import com.ecommerce.common.event.OrderCancelledEvent;
 import com.ecommerce.common.event.OrderConfirmedEvent;
 import com.ecommerce.notification.dto.NotificationRequest;
 import com.ecommerce.notification.entity.Notification;
@@ -65,6 +66,31 @@ public class NotificationService {
     public Notification createPaymentSuccess(OrderConfirmedEvent event) {
         String message = "Payment successful! Your order " + event.orderId()
                 + " has been paid successfully. Amount: " + event.amount();
+
+        return create(new NotificationRequest(
+                event.orderId(),
+                event.userId(),
+                message,
+                "SENT"
+        ));
+    }
+
+    public Notification createPaymentFailed(OrderCancelledEvent event) {
+        String message = "Payment failed for your order " + event.orderId()
+                + " because of a payment, bank, or server problem. "
+                + "Please try again. Amount: " + event.amount();
+
+        return create(new NotificationRequest(
+                event.orderId(),
+                event.userId(),
+                message,
+                "SENT"
+        ));
+    }
+
+    public Notification createOrderCancelled(OrderCancelledEvent event) {
+        String message = "Your order " + event.orderId()
+                + " has been cancelled. Reason: " + event.reason();
 
         return create(new NotificationRequest(
                 event.orderId(),

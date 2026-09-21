@@ -22,3 +22,8 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+payment:
+  demo:
+    # Set to true to exercise payment failure and order cancellation notifications.
+    force-failure: false
