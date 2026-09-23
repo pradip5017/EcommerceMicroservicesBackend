@@ -14,7 +14,9 @@ import java.util.List;
 public class NotificationService {
     private final NotificationRepository repo;
 
-    public NotificationService(NotificationRepository repo) { this.repo = repo; }
+    public NotificationService(NotificationRepository repo) {
+        this.repo = repo;
+    }
 
     public Notification create(NotificationRequest request) {
         Notification notification = new Notification();
@@ -26,7 +28,9 @@ public class NotificationService {
         return repo.save(notification);
     }
 
-    public List<Notification> getAll() { return repo.findAll(); }
+    public List<Notification> getAll() {
+        return repo.findAll();
+    }
 
     public List<Notification> getByOrderId(Long orderId) {
         return repo.findByOrderIdOrderByCreatedAtDesc(orderId);
@@ -50,7 +54,9 @@ public class NotificationService {
         return repo.save(notification);
     }
 
-    public void delete(Long id) { repo.delete(get(id)); }
+    public void delete(Long id) {
+        repo.delete(get(id));
+    }
 
     public Notification createOrderConfirmation(OrderConfirmedEvent event) {
         String message = "Your order " + event.orderId() + " has been confirmed. Amount: " + event.amount();

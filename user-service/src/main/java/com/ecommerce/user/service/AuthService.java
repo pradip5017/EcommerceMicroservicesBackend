@@ -14,20 +14,22 @@ public class AuthService {
     private final JwtService jwt;
 
     public AuthService(UserRepository repo, PasswordEncoder encoder, JwtService jwt) {
-        this.repo=repo; this.encoder=encoder; this.jwt=jwt;
+        this.repo = repo;
+        this.encoder = encoder;
+        this.jwt = jwt;
     }
 
     public void register(RegisterRequest r) {
-        if(repo.existsByUsername(r.username())) throw new IllegalArgumentException("Username already exists");
-        if(repo.existsByEmail(r.email())) throw new IllegalArgumentException("Email already exists");
-        repo.save(new User(r.username(),r.email(),encoder.encode(r.password()),"USER"));
+        if (repo.existsByUsername(r.username())) throw new IllegalArgumentException("Username already exists");
+        if (repo.existsByEmail(r.email())) throw new IllegalArgumentException("Email already exists");
+        repo.save(new User(r.username(), r.email(), encoder.encode(r.password()), "USER"));
     }
 
     public LoginResponse login(LoginRequest r) {
-        User u=repo.findByUsername(r.username())
-                .orElseThrow(()->new IllegalArgumentException("Invalid username or password"));
-        if(!encoder.matches(r.password(),u.getPassword()))
+        User u = repo.findByUsername(r.username())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid username or password"));
+        if (!encoder.matches(r.password(), u.getPassword()))
             throw new IllegalArgumentException("Invalid username or password");
-        return new LoginResponse(jwt.generate(u.getUsername(),u.getRole()),u.getUsername(),u.getRole());
+        return new LoginResponse(jwt.generate(u.getUsername(), u.getRole()), u.getUsername(), u.getRole());
     }
 }

@@ -10,13 +10,20 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 public class SecurityConfig {
-    @Bean PasswordEncoder passwordEncoder(){ return new BCryptPasswordEncoder(); }
-    @Bean AuthenticationManager authenticationManager(AuthenticationConfiguration c) throws Exception {
+    @Bean
+    PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    AuthenticationManager authenticationManager(AuthenticationConfiguration c) throws Exception {
         return c.getAuthenticationManager();
     }
-    @Bean SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http.csrf(c->c.disable())
-            .authorizeHttpRequests(a->a.anyRequest().permitAll())
-            .build();
+
+    @Bean
+    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        return http.csrf(c -> c.disable())
+                .authorizeHttpRequests(a -> a.anyRequest().permitAll())
+                .build();
     }
 }

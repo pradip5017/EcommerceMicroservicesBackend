@@ -4,6 +4,7 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
 import javax.crypto.SecretKey;
 import java.util.Date;
 
@@ -23,7 +24,7 @@ public class JwtService {
                 .subject(username)
                 .claim("role", role)
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis()+expiration))
+                .expiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(key)
                 .compact();
     }

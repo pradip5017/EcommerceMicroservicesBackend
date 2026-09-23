@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Commerce Microservices Cloud Dashboard</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4f46e5',
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#312e81',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- FontAwesome 6 Free CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
+    <!-- Google Fonts & Custom Styles -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
+
+<!-- Toast Notifications Container -->
+<div id="toast-container"></div>
+
+<div class="flex h-screen overflow-hidden">
+    <!-- ============================================== -->
+    <!-- 1. LEFT SIDEBAR MENU BAR                      -->
+    <!-- ============================================== -->
+    <aside id="sidebar"
+           class="w-64 bg-white border-r border-slate-200/80 flex flex-col flex-shrink-0 transition-transform duration-300 z-30 fixed inset-y-0 left-0 lg:static -translate-x-full lg:translate-x-0">
+        <!-- Brand Logo -->
+        <div class="h-16 px-6 border-b border-slate-100 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-800 text-white flex items-center justify-center shadow-md shadow-indigo-500/20">
+                    <i class="fa-solid fa-cube text-base"></i>
+                </div>
+                <div>
+                    <h1 class="text-sm font-extrabold tracking-tight text-slate-900 leading-none">MicroCommerce</h1>
+                    <span class="text-[10px] font-semibold text-indigo-600 tracking-wider uppercase">Backend Cloud</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Links -->
+        <div class="flex-1 px-4 py-5 space-y-6 overflow-y-auto">
+            <!-- Group 1: Core Operations -->
+            <div>
+                <p class="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Commerce Core</p>
+                <nav class="space-y-1">
+                    <a href="#dashboard" data-view="dashboard"
+                       class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition group">
+                        <i class="fa-solid fa-chart-pie text-sm w-5 text-center text-slate-400 group-hover:text-indigo-600"></i>
+                        <span>Overview</span>
+                    </a>
+                    <a href="#products" data-view="products"
+                       class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition group">
+                        <i class="fa-solid fa-boxes-stacked text-sm w-5 text-center text-slate-400 group-hover:text-indigo-600"></i>
+                        <span>Products</span>
+                    </a>
+                    <a href="#orders" data-view="orders"
+                       class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition group">
+                        <i class="fa-solid fa-receipt text-sm w-5 text-center text-slate-400 group-hover:text-indigo-600"></i>
+                        <span>Orders</span>
+                    </a>
+                    <a href="#payments" data-view="payments"
+                       class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition group">
+                        <i class="fa-solid fa-credit-card text-sm w-5 text-center text-slate-400 group-hover:text-indigo-600"></i>
+                        <span>Payments & API</span>
+                    </a>
+                    <a href="#inventory" data-view="inventory"
+                       class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition group">
+                        <i class="fa-solid fa-warehouse text-sm w-5 text-center text-slate-400 group-hover:text-indigo-600"></i>
+                        <span>Inventory</span>
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Group 2: Microservices & Realtime -->
+            <div>
+                <p class="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Services & Events</p>
+                <nav class="space-y-1">
+                    <a href="#notifications" data-view="notifications"
+                       class="nav-link flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition group">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-bell text-sm w-5 text-center text-slate-400 group-hover:text-indigo-600"></i>
+                            <span>Notifications</span>
+                        </div>
+                        <span id="sidebar-notif-badge"
+                              class="hidden px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-purple-600 text-white">0</span>
+                    </a>
+                    <a href="#auth" data-view="auth"
+                       class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition group">
+                        <i class="fa-solid fa-user-shield text-sm w-5 text-center text-slate-400 group-hover:text-indigo-600"></i>
+                        <span>Auth & Users</span>
+                    </a>
+                    <a href="#status" data-view="status"
+                       class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition group">
+                        <i class="fa-solid fa-server text-sm w-5 text-center text-slate-400 group-hover:text-indigo-600"></i>
+                        <span>Topology Matrix</span>
+                    </a>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Footer Service Pill -->
+        <div class="p-4 border-t border-slate-100 bg-slate-50/50">
+            <div class="p-3 bg-white rounded-xl border border-slate-200/80 shadow-xs flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <span class="pulse-live"></span>
+                    <span class="text-[11px] font-bold text-slate-700">Gateway :8080</span>
+                </div>
+                <span class="text-[10px] font-mono font-bold text-indigo-600">ACTIVE</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ============================================== -->
+    <!-- 2. MAIN APP CONTENT & TOP NAVIGATION BAR       -->
+    <!-- ============================================== -->
+    <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+        <!-- Topbar Navigation -->
+        <header class="h-16 bg-white border-b border-slate-200/80 sticky top-0 z-20 px-6 flex items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <button id="mobile-menu-btn"
+                        class="lg:hidden w-9 h-9 rounded-xl border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-50">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <div>
+                    <h2 id="page-title" class="text-base font-bold text-slate-900 leading-tight">Overview & Metrics</h2>
+                    <div class="flex items-center gap-1.5 text-[11px] text-slate-400 font-medium">
+                        <span>App</span>
+                        <span>/</span>
+                        <span id="page-breadcrumb" class="text-indigo-600 font-semibold">Overview</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <!-- Notification Bell -->
+                <button id="topbar-notif-bell" title="Notification Center"
+                        class="relative w-10 h-10 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 flex items-center justify-center transition">
+                    <i class="fa-solid fa-bell text-sm"></i>
+                    <span id="topbar-notif-badge"
+                          class="hidden absolute -top-1 -right-1 px-1.5 py-0.5 rounded-full text-[10px] font-black bg-purple-600 text-white min-w-[18px] text-center shadow-sm">
+                            0
+                        </span>
+                </button>
+
+                <!-- Gateway Settings Config -->
+                <button id="topbar-settings-btn" title="Backend Gateway Settings"
+                        class="w-10 h-10 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 flex items-center justify-center transition">
+                    <i class="fa-solid fa-sliders text-sm"></i>
+                </button>
+
+                <div class="h-6 w-px bg-slate-200 mx-1"></div>
+
+                <!-- User Profile Chip -->
+                <div onclick="App.navigateTo('auth')"
+                     class="flex items-center gap-2.5 pl-2 cursor-pointer hover:opacity-90 transition">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-indigo-700 text-white font-bold text-xs flex items-center justify-center shadow-xs">
+                        <span id="topbar-avatar">U</span>
+                    </div>
+                    <div class="hidden sm:block text-left">
+                        <div class="flex items-center gap-1.5">
+                            <span id="topbar-username"
+                                  class="text-xs font-bold text-slate-800 leading-none">demo_user</span>
+                            <span id="topbar-userid"
+                                  class="text-[10px] font-mono font-bold text-indigo-600 bg-indigo-50 px-1 py-0.2 rounded">User ID: 1</span>
+                        </div>
+                        <span id="topbar-userrole"
+                              class="text-[10px] text-slate-400 font-semibold leading-none">USER</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dynamic View Container -->
+        <main class="flex-1 p-6 max-w-7xl w-full mx-auto">
+            <div id="view-container">
+                <!-- Views rendered here dynamically -->
+            </div>
+        </main>
+
+        <!-- ============================================== -->
+        <!-- 3. MODERN ENTERPRISE FOOTER                    -->
+        <!-- ============================================== -->
+        <footer class="bg-white border-t border-slate-200/80 mt-12 py-10 px-6 sm:px-12 text-slate-600">
+            <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+                <!-- Col 1: Brand & Architecture -->
+                <div>
+                    <div class="flex items-center gap-2.5 mb-3">
+                        <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-800 text-white flex items-center justify-center text-sm shadow-md shadow-indigo-500/20">
+                            <i class="fa-solid fa-cube"></i>
+                        </div>
+                        <h3 class="text-sm font-extrabold text-slate-900 tracking-tight">MicroCommerce Cloud</h3>
+                    </div>
+                    <p class="text-xs text-slate-500 leading-relaxed">
+                        Event-driven e-commerce microservices platform built with Spring Boot 3, Apache Kafka Saga
+                        orchestration, and Spring Cloud Gateway.
+                    </p>
+                    <div class="mt-4 flex items-center gap-2">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                <span class="pulse-live"></span> 7 Services Connected
+                            </span>
+                    </div>
+                </div>
+
+                <!-- Col 2: Services & Ports Map -->
+                <div>
+                    <h4 class="text-xs font-bold text-slate-900 uppercase tracking-wider mb-3">Microservices &
+                        Ports</h4>
+                    <ul class="space-y-1.5 text-xs text-slate-500 font-mono">
+                        <li class="flex items-center justify-between">
+                            <span>API Gateway:</span>
+                            <span class="font-bold text-indigo-600">:8080</span>
+                        </li>
+                        <li class="flex items-center justify-between">
+                            <span>User Service:</span>
+                            <span class="font-bold text-slate-700">:8081</span>
+                        </li>
+                        <li class="flex items-center justify-between">
+                            <span>Product Service:</span>
+                            <span class="font-bold text-slate-700">:8082</span>
+                        </li>
+                        <li class="flex items-center justify-between">
+                            <span>Inventory Service:</span>
+                            <span class="font-bold text-slate-700">:8083</span>
+                        </li>
+                        <li class="flex items-center justify-between">
+                            <span>Order Service:</span>
+                            <span class="font-bold text-slate-700">:8084</span>
+                        </li>
+                        <li class="flex items-center justify-between">
+                            <span>Payment Service:</span>
+                            <span class="font-bold text-slate-700">:8085</span>
+                        </li>
+                        <li class="flex items-center justify-between">
+                            <span>Notification Service:</span>
+                            <span class="font-bold text-purple-600">:8086</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Col 3: Quick Navigation -->
+                <div>
+                    <h4 class="text-xs font-bold text-slate-900 uppercase tracking-wider mb-3">Quick Navigation</h4>
+                    <ul class="space-y-1.5 text-xs">
+                        <li><a href="#dashboard" onclick="App.navigateTo('dashboard')"
+                               class="hover:text-indigo-600 transition flex items-center gap-1.5"><i
+                                class="fa-solid fa-chevron-right text-[9px] text-slate-400"></i> Dashboard Overview</a>
+                        </li>
+                        <li><a href="#products" onclick="App.navigateTo('products')"
+                               class="hover:text-indigo-600 transition flex items-center gap-1.5"><i
+                                class="fa-solid fa-chevron-right text-[9px] text-slate-400"></i> Product Catalog</a>
+                        </li>
+                        <li><a href="#orders" onclick="App.navigateTo('orders')"
+                               class="hover:text-indigo-600 transition flex items-center gap-1.5"><i
+                                class="fa-solid fa-chevron-right text-[9px] text-slate-400"></i> Order Management</a>
+                        </li>
+                        <li><a href="#payments" onclick="App.navigateTo('payments')"
+                               class="hover:text-indigo-600 transition flex items-center gap-1.5"><i
+                                class="fa-solid fa-chevron-right text-[9px] text-slate-400"></i> Dummy Payment API</a>
+                        </li>
+                        <li><a href="#inventory" onclick="App.navigateTo('inventory')"
+                               class="hover:text-indigo-600 transition flex items-center gap-1.5"><i
+                                class="fa-solid fa-chevron-right text-[9px] text-slate-400"></i> Inventory Warehouse</a>
+                        </li>
+                        <li><a href="#notifications" onclick="App.navigateTo('notifications')"
+                               class="hover:text-indigo-600 transition flex items-center gap-1.5"><i
+                                class="fa-solid fa-chevron-right text-[9px] text-slate-400"></i> Kafka Notifications</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Col 4: Event Topics & Tech Stack -->
+                <div>
+                    <h4 class="text-xs font-bold text-slate-900 uppercase tracking-wider mb-3">Kafka Event Topics</h4>
+                    <div class="flex flex-wrap gap-1.5 mb-3">
+                        <span class="px-2 py-0.5 rounded-md text-[10px] font-mono bg-purple-50 text-purple-700 border border-purple-200">order-confirmed</span>
+                        <span class="px-2 py-0.5 rounded-md text-[10px] font-mono bg-emerald-50 text-emerald-700 border border-emerald-200">payment-completed</span>
+                        <span class="px-2 py-0.5 rounded-md text-[10px] font-mono bg-blue-50 text-blue-700 border border-blue-200">inventory-reserved</span>
+                        <span class="px-2 py-0.5 rounded-md text-[10px] font-mono bg-red-50 text-red-700 border border-red-200">order-cancelled</span>
+                    </div>
+                    <p class="text-[11px] text-slate-400 leading-snug">
+                        Kafka Broker: <code class="text-slate-600 font-mono font-bold">localhost:29092</code><br>
+                        MySQL Database: <code class="text-slate-600 font-mono font-bold">localhost:3306</code>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Bottom Bar -->
+            <div class="max-w-7xl mx-auto pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-slate-400">
+                <p>© 2026 MicroCommerce Cloud Backend Architecture. All rights reserved.</p>
+                <div class="flex items-center gap-4">
+                    <span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> System Operational</span>
+                    <span>•</span>
+                    <a href="#status" onclick="App.navigateTo('status')"
+                       class="text-indigo-600 hover:text-indigo-800 font-semibold">Topology Matrix</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+</div>
+
+<!-- ============================================== -->
+<!-- 4. GLOBAL MODALS & DIALOGS                     -->
+<!-- ============================================== -->
+
+<!-- Product Create/Edit Modal -->
+<div id="product-modal" class="fixed inset-0 z-50 modal-backdrop hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 duration-200">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+            <h3 id="product-modal-title" class="font-bold text-base text-slate-900">Add New Product</h3>
+            <button id="product-modal-close" class="text-slate-400 hover:text-slate-600">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+        </div>
+        <form id="product-form" class="mt-4 space-y-4">
+            <input type="hidden" id="prod-edit-id"/>
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Product Name</label>
+                <input id="prod-name" type="text" required placeholder="Sony WH-1000XM5 Headphones"
+                       class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"/>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Category</label>
+                <input id="prod-category" type="text" required placeholder="Audio, Laptops, Monitors..."
+                       class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"/>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Price (₹)</label>
+                <input id="prod-price" type="number" step="0.01" min="0.01" required placeholder="399.99"
+                       class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-bold font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"/>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Image URL</label>
+                <input id="prod-image" type="url" placeholder="https://images.unsplash.com/..."
+                       class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"/>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Description</label>
+                <textarea id="prod-desc" rows="3" placeholder="Enter high-level product specifications..."
+                          class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"></textarea>
+            </div>
+            <div class="pt-2 flex items-center justify-end gap-2">
+                <button type="button" onclick="ProductsView.closeModal()"
+                        class="px-4 py-2.5 border border-slate-200 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-50 transition">
+                    Cancel
+                </button>
+                <button type="submit"
+                        class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow transition">
+                    Save Product
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Order Creation Modal -->
+<div id="order-modal" class="fixed inset-0 z-50 modal-backdrop hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 duration-200">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div>
+                <h3 class="font-bold text-base text-slate-900">Place New Order</h3>
+                <p class="text-xs text-slate-500">Initiates the Saga distributed transaction flow</p>
+            </div>
+            <button id="order-modal-close" class="text-slate-400 hover:text-slate-600">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+        </div>
+        <form id="order-form" class="mt-4 space-y-4">
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">User ID</label>
+                <input id="order-user-id" type="number" required
+                       class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"/>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Choose Product</label>
+                <select id="order-product-select" required
+                        onchange="OrdersView.checkSelectedProductStock(); OrdersView.calculateOrderTotal();"
+                        class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500">
+                    <!-- Populated dynamically -->
+                </select>
+            </div>
+
+            <!-- Stock Level Indicator Banner in Order Modal -->
+            <div id="order-stock-banner" class="hidden"></div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Quantity</label>
+                <input id="order-qty" type="number" min="1" max="100" value="1" required
+                       class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-mono font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"/>
+            </div>
+            <div class="p-4 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-between">
+                <div>
+                    <span class="text-xs text-indigo-700 font-bold uppercase tracking-wider">Calculated Total</span>
+                    <p class="text-[11px] text-indigo-500">Unit price × Quantity</p>
+                </div>
+                <span id="order-total-amount" class="text-xl font-black text-indigo-900 font-mono">₹0.00</span>
+            </div>
+            <div class="pt-2 flex items-center justify-end gap-2">
+                <button type="button" onclick="OrdersView.closeModal()"
+                        class="px-4 py-2.5 border border-slate-200 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-50 transition">
+                    Cancel
+                </button>
+                <button type="submit" id="order-submit-btn"
+                        class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-bolt"></i> Submit Order
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Gateway Settings Modal -->
+<div id="settings-modal" class="fixed inset-0 z-50 modal-backdrop hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 duration-200">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+            <h3 class="font-bold text-base text-slate-900">API Gateway Configuration</h3>
+            <button id="settings-modal-close" class="text-slate-400 hover:text-slate-600">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+        </div>
+        <form id="settings-form" class="mt-4 space-y-4">
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">API Gateway Base URL</label>
+                <input id="setting-gateway-url" type="url" required placeholder="http://localhost:8080"
+                       class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"/>
+                <p class="text-[11px] text-slate-400 mt-1">Default is <code class="text-indigo-600 font-mono">http://localhost:8080</code>
+                    for the local Spring Cloud Gateway.</p>
+            </div>
+            <div class="pt-2 flex items-center justify-end gap-2">
+                <button type="button" onclick="document.getElementById('settings-modal').classList.add('hidden')"
+                        class="px-4 py-2.5 border border-slate-200 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-50 transition">
+                    Cancel
+                </button>
+                <button type="submit"
+                        class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold shadow transition">
+                    Save URL
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ============================================== -->
+<!-- 5. MODULAR SCRIPTS LOADER                      -->
+<!-- ============================================== -->
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/components/navbar.js"></script>
+<script src="js/views/dashboardView.js"></script>
+<script src="js/views/productsView.js"></script>
+<script src="js/views/ordersView.js"></script>
+<script src="js/views/paymentsView.js"></script>
+<script src="js/views/inventoryView.js"></script>
+<script src="js/views/notificationsView.js"></script>
+<script src="js/views/authView.js"></script>
+<script src="js/views/statusView.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
